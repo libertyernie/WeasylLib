@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Drawing;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace WeasylLib.Example {
@@ -11,7 +13,19 @@ namespace WeasylLib.Example {
             if (string.IsNullOrEmpty(apiKey)) return;
 
             var client = new WeasylClient(apiKey);
-            ListGallery(client).GetAwaiter().GetResult();
+            PrintAvatar(client).GetAwaiter().GetResult();
+        }
+
+        static async Task PrintAvatar(WeasylClient client) {
+            var user = await client.WhoamiAsync();
+            string url = await client.GetAvatarUrlAsync(user.login);
+            var request = WebRequest.Create(url);
+            using (var response = await request.GetResponseAsync())
+            using (var stream = response.GetResponseStream()) {
+                if (Image.FromStream(stream) is Bitmap bmp) {
+                    ConsoleImage.ConsoleWriteImage(bmp);
+                }
+            }
         }
 
         static async Task ListGallery(WeasylClient client) {

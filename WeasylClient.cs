@@ -77,6 +77,17 @@ namespace WeasylLib
                 return JsonConvert.DeserializeObject<WeasylCharacterDetail>(json);
             }
         }
+
+        public async Task<string> GetAvatarUrlAsync(string username) {
+            HttpWebRequest req = WebRequest.CreateHttp($"https://www.weasyl.com/api/useravatar?username={WebUtility.UrlEncode(username)}");
+            req.Headers["X-Weasyl-API-Key"] = _apiKey;
+            using (WebResponse resp = await req.GetResponseAsync())
+            using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
+                string json = await sr.ReadToEndAsync();
+                var obj = JsonConvert.DeserializeObject<Dictionary<string, string>>(json);
+                return obj["avatar"];
+            }
+        }
         
         public async Task<WeasylUser> WhoamiAsync() {
             HttpWebRequest req = WebRequest.CreateHttp("https://www.weasyl.com/api/whoami");
