@@ -19,7 +19,7 @@ namespace WeasylLib
             if (user == null) throw new ArgumentNullException(nameof(user));
 
             StringBuilder qs = new StringBuilder();
-            if (since != null) qs.Append($"&since={since.Value.ToString("u")}");
+            if (since != null) qs.Append($"&since={since.Value.ToString("s")}Z");
             if (count != null) qs.Append($"&count={count}");
             if (folderid != null) qs.Append($"&folderid={folderid}");
             if (backid != null) qs.Append($"&backid={backid}");
