@@ -13,7 +13,7 @@ namespace WeasylLib.Example {
             if (string.IsNullOrEmpty(apiKey)) return;
 
             var client = new WeasylClient(apiKey);
-            PrintAvatar(client).GetAwaiter().GetResult();
+			ListGallery(client).GetAwaiter().GetResult();
         }
 
         static async Task PrintAvatar(WeasylClient client) {
