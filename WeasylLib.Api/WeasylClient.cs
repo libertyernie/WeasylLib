@@ -6,8 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeasylLib
-{
+namespace WeasylLib.Api {
 	public class WeasylClient {
 		private string _apiKey;
 
@@ -15,15 +14,32 @@ namespace WeasylLib
 			_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
 		}
 
-		public async Task<WeasylGallery> GetUserGalleryAsync(string user, DateTime? since = null, int? count = null, int? folderid = null, int? backid = null, int? nextid = null) {
+		public struct GalleryRequestOptions {
+			public DateTimeOffset? since;
+			public int? count;
+			public int? folderid;
+			public int? backid;
+			public int? nextid;
+		}
+		
+		public async Task<WeasylGallery> GetUserGalleryAsync(string user, GalleryRequestOptions? options = null) {
 			if (user == null) throw new ArgumentNullException(nameof(user));
 
 			StringBuilder qs = new StringBuilder();
-			if (since != null) qs.Append($"&since={since.Value.ToString("s")}Z");
-			if (count != null) qs.Append($"&count={count}");
-			if (folderid != null) qs.Append($"&folderid={folderid}");
-			if (backid != null) qs.Append($"&backid={backid}");
-			if (nextid != null) qs.Append($"&nextid={nextid}");
+			if (options is GalleryRequestOptions o) {
+				if (o.since is DateTimeOffset dt) {
+					qs.Append($"&since={dt.UtcDateTime.ToString("s")}Z");
+				}
+
+				if (o.count != null)
+					qs.Append($"&count={o.count}");
+				if (o.folderid != null)
+					qs.Append($"&folderid={o.folderid}");
+				if (o.backid != null)
+					qs.Append($"&backid={o.backid}");
+				if (o.nextid != null)
+					qs.Append($"&nextid={o.nextid}");
+			}
 
 			HttpWebRequest req = WebRequest.CreateHttp($"https://www.weasyl.com/api/users/{user}/gallery?{qs}");
 			req.Headers["X-Weasyl-API-Key"] = _apiKey;
@@ -31,30 +47,6 @@ namespace WeasylLib
 			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
 				string json = await sr.ReadToEndAsync();
 				return JsonConvert.DeserializeObject<WeasylGallery>(json);
-			}
-		}
-
-		public async Task<List<int>> ScrapeCharacterIdsAsync(string user) {
-			if (user == null) throw new ArgumentNullException(nameof(user));
-
-			HttpWebRequest req = WebRequest.CreateHttp($"https://www.weasyl.com/characters/{user}");
-			using (WebResponse resp = await req.GetResponseAsync())
-			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
-				string html = await sr.ReadToEndAsync();
-				int lastIndex = 0;
-				List<int> ids = new List<int>();
-				while ((lastIndex = html.IndexOf("\"/character/", lastIndex)) != -1) {
-					lastIndex += "\"/character/".Length;
-					int id = 0;
-					while (true) {
-						char c = html[lastIndex];
-						if (c < '0' || c > '9') break;
-						id = (10 * id) + (c - '0');
-						lastIndex++;
-					}
-					if (id != 0 && !ids.Contains(id)) ids.Add(id);
-				}
-				return ids;
 			}
 		}
 		

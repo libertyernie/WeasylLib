@@ -3,6 +3,8 @@ using System.Drawing;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using WeasylLib.Api;
+using WeasylLib.Frontend;
 
 namespace WeasylLib.Example {
     class Program {
@@ -33,16 +35,24 @@ namespace WeasylLib.Example {
             Console.WriteLine(user.login);
 
             Console.WriteLine("----------");
-            var gallery = await client.GetUserGalleryAsync(user.login, count: 1);
+            var gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
+				count = 1
+			});
             foreach (var s in gallery.submissions) Console.WriteLine(s.title);
 
             Console.WriteLine("----------");
-            gallery = await client.GetUserGalleryAsync(user.login, count: 10, nextid: gallery.nextid);
+            gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
+				count = 10,
+				nextid = gallery.nextid
+			});
             foreach (var s in gallery.submissions) Console.WriteLine(s.title);
 
             Console.WriteLine("----------");
-            gallery = await client.GetUserGalleryAsync(user.login, count: 3, nextid: gallery.nextid);
-            foreach (var s in gallery.submissions) Console.WriteLine(s.title);
+            gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
+				count = 3,
+				nextid = gallery.nextid
+			});
+			foreach (var s in gallery.submissions) Console.WriteLine(s.title);
 
             Console.WriteLine("----------");
             foreach (var s in gallery.submissions) {
@@ -58,7 +68,7 @@ namespace WeasylLib.Example {
             Console.WriteLine(user.login);
 
             Console.WriteLine("----------");
-            var charids = await client.ScrapeCharacterIdsAsync(user.login);
+            var charids = await Scraper.GetCharacterIdsAsync(user.login);
             foreach (int id in charids) Console.WriteLine(id);
 
             Console.WriteLine("----------");

@@ -52,9 +52,13 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WeasylLib.csproj">
-      <Project>{f0d78011-193f-44eb-9189-7462877c13a9}</Project>
-      <Name>WeasylLib</Name>
+    <ProjectReference Include="..\WeasylLib.Api\WeasylLib.Api.csproj">
+      <Project>{47B2594F-6243-411C-A3FC-FB543908CAEF}</Project>
+      <Name>WeasylLib.Api</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\WeasylLib.Frontend\WeasylLib.Frontend.csproj">
+      <Project>{0DD57635-3139-4C6E-ABA1-56A250243BD0}</Project>
+      <Name>WeasylLib.Frontend</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

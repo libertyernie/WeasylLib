@@ -2,15 +2,12 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>WeasylLib.Api</AssemblyName>
+    <RootNamespace>WeasylLib.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="WeasylLib.Example\**" />
-    <EmbeddedResource Remove="WeasylLib.Example\**" />
-    <None Remove="WeasylLib.Example\**" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <None Remove=".editorconfig" />
     <None Remove=".git" />
     <None Remove=".gitignore" />
     <None Remove="LICENSE.txt" />

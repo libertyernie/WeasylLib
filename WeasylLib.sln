@@ -5,7 +5,9 @@ VisualStudioVersion = 15.0.27703.2026
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeasylLib.Example", "WeasylLib.Example\WeasylLib.Example.csproj", "{95FFF9DD-C1B4-4C3F-B96E-5F4FC932B9F2}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeasylLib", "WeasylLib.csproj", "{47B2594F-6243-411C-A3FC-FB543908CAEF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeasylLib.Api", "WeasylLib.Api\WeasylLib.Api.csproj", "{47B2594F-6243-411C-A3FC-FB543908CAEF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeasylLib.Frontend", "WeasylLib.Frontend\WeasylLib.Frontend.csproj", "{0DD57635-3139-4C6E-ABA1-56A250243BD0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{47B2594F-6243-411C-A3FC-FB543908CAEF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{47B2594F-6243-411C-A3FC-FB543908CAEF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{47B2594F-6243-411C-A3FC-FB543908CAEF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0DD57635-3139-4C6E-ABA1-56A250243BD0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0DD57635-3139-4C6E-ABA1-56A250243BD0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0DD57635-3139-4C6E-ABA1-56A250243BD0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0DD57635-3139-4C6E-ABA1-56A250243BD0}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

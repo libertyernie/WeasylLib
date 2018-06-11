@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WeasylLib {
+namespace WeasylLib.Api {
 	public class WeasylGallery {
 		public IEnumerable<WeasylGallerySubmission> submissions;
 		public int? backid;
