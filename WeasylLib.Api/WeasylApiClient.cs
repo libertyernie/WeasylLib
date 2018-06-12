@@ -7,10 +7,10 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace WeasylLib.Api {
-	public class WeasylClient {
+	public class WeasylApiClient {
 		private string _apiKey;
 
-		public WeasylClient(string apiKey) {
+		public WeasylApiClient(string apiKey) {
 			_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
 		}
 

@@ -7,8 +7,8 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WeasylLib.Frontend {
-	public class SignIn {
-		private CookieContainer cookieContainer = new CookieContainer();
+	public class WeasylFrontendClient {
+		private readonly CookieContainer cookieContainer = new CookieContainer();
 
 		private async Task<string> GetCsrfTokenAsync(string url) {
 			Regex regex = new Regex("<html[^>]* data-csrf-token=['\"]([A-Za-z0-9]+)['\"]");
