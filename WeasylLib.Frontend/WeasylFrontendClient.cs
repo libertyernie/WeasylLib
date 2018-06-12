@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace WeasylLib.Frontend {
-	public class SignIn {
+	public class WeasylFrontendClient {
 		private CookieContainer cookieContainer = new CookieContainer();
 
 		private async Task<string> GetCsrfTokenAsync(string url) {
@@ -89,6 +89,47 @@ namespace WeasylLib.Frontend {
 			}
 
 			return null;
+		}
+
+		public struct Folder {
+			public int FolderId;
+			public string Name;
+
+			public override string ToString() {
+				return Name;
+			}
+		}
+
+		public async Task<IEnumerable<Folder>> GetFoldersAsync() {
+			var list = new List<Folder>();
+
+			HttpWebRequest req = WebRequest.CreateHttp("https://www.weasyl.com/submit/visual");
+			req.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
+			req.CookieContainer = cookieContainer;
+			req.UserAgent = "WeasylLib.Frontend/0.1 (https://https://github.com/libertyernie/WeasylLib)";
+			using (WebResponse resp = await req.GetResponseAsync())
+			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
+				string line;
+				while ((line = await sr.ReadLineAsync()) != null) {
+					if (line.Contains("<select name=\"folderid\"")) {
+						break;
+					}
+				}
+
+				var regex = new Regex(@"<option value=""(\d+)"">([^<]+)</option>");
+				while ((line = await sr.ReadLineAsync()) != null) {
+					var match = regex.Match(line);
+					if (match.Success && int.TryParse(match.Groups[1].Value, out int id)) {
+						list.Add(new Folder {
+							FolderId = id,
+							Name = match.Groups[2].Value
+						});
+					}
+					if (line.Contains("</select>")) break;
+				}
+			}
+
+			return list;
 		}
 
 		public async Task SignOutAsync() {
