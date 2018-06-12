@@ -14,7 +14,7 @@ namespace WeasylLib.Api {
 			_apiKey = apiKey ?? throw new ArgumentNullException(nameof(apiKey));
 		}
 
-		public struct GalleryRequestOptions {
+		public class GalleryRequestOptions {
 			public DateTimeOffset? since;
 			public int? count;
 			public int? folderid;
@@ -22,7 +22,7 @@ namespace WeasylLib.Api {
 			public int? nextid;
 		}
 		
-		public async Task<WeasylGallery> GetUserGalleryAsync(string user, GalleryRequestOptions? options = null) {
+		public async Task<WeasylGallery> GetUserGalleryAsync(string user, GalleryRequestOptions options = null) {
 			if (user == null) throw new ArgumentNullException(nameof(user));
 
 			StringBuilder qs = new StringBuilder();
