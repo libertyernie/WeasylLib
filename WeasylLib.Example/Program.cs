@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
@@ -18,10 +19,19 @@ namespace WeasylLib.Example {
 			ListGallery(client).GetAwaiter().GetResult();
 		}
 
-		static async Task GetFoldersAsync() {
+		static async Task UploadImageAsync() {
 			var c = new WeasylFrontendClient();
 			await c.SignInAsync("lizardsocks", Console.ReadLine(), true);
-			foreach (var f in await c.GetFoldersAsync()) Console.WriteLine(f.FolderId + " " + f.Name);
+			var folders = await c.GetFoldersAsync();
+			var uri = await c.UploadVisualAsync(
+				File.ReadAllBytes(@"C:\Users\admin\Pictures\san diego\P_20170315_190424.jpg"),
+				"WBC 2017",
+				WeasylFrontendClient.SubmissionType.Photography,
+				folders.First().FolderId,
+				WeasylFrontendClient.Rating.General,
+				"Uploading some old pictures to test some C# code I'm writing.",
+				new[] { "photo", "baseball", "san diego" });
+			Console.WriteLine(uri);
 			await c.SignOutAsync();
 		}
 
