@@ -11,6 +11,15 @@ namespace WeasylLib.Frontend {
 	public class WeasylFrontendClient {
 		private CookieContainer cookieContainer = new CookieContainer();
 
+		public string WZL {
+			get {
+				return cookieContainer.GetCookies(new Uri("https://www.weasyl.com"))["WZL"]?.Value;
+			}
+			set {
+				cookieContainer.SetCookies(new Uri("https://www.weasyl.com"), "WZL=" + Regex.Replace(value, "[^A-Za-z0-9]", ""));
+			}
+		}
+
 		private HttpWebRequest CreateRequest(string url) {
 			HttpWebRequest req = WebRequest.CreateHttp(url);
 			req.CookieContainer = cookieContainer;
