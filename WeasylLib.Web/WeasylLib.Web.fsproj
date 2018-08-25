@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="WeasylFrontendClient.fs" />
+    <Compile Include="Scraper.fs" />
+  </ItemGroup>
+
+</Project>
