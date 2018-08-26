@@ -225,8 +225,8 @@ namespace WeasylLib.Frontend {
 			} catch (WebException ex) when ((ex.Response as HttpWebResponse)?.StatusCode == (HttpStatusCode)422) {
 				using (var sr = new StreamReader(ex.Response.GetResponseStream())) {
 					string html = sr.ReadToEnd();
-					var m = Regex.Match(html, "<div id=\"error_content\".*?</div>", RegexOptions.Singleline);
-					if (m.Success) html = m.Value;
+					var m = Regex.Match(html, "<div id=\"error_content\".*?>\\s+<p>(.*?)</p>", RegexOptions.Singleline);
+					if (m.Success) html = m.Groups[1].Value.Trim();
 					throw new Exception(html, ex);
 				}
 			}
