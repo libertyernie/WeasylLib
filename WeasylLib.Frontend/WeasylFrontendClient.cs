@@ -232,6 +232,20 @@ namespace WeasylLib.Frontend {
 			}
 		}
 
+		public async Task DeleteSubmissionAsync(int submitid) {
+			string username = await GetUsernameAsync();
+			string token = await GetCsrfTokenAsync($"https://www.weasyl.com/~{username}/submissions/{submitid}");
+
+			HttpWebRequest req = CreateRequest("https://www.weasyl.com/remove/submission");
+			req.Method = "POST";
+			req.ContentType = "application/x-www-form-urlencoded";
+			using (Stream stream = await req.GetRequestStreamAsync())
+			using (StreamWriter sw = new StreamWriter(stream)) {
+				await sw.WriteLineAsync($"token={token}&submitid={submitid}");
+			}
+			using (var resp = await req.GetResponseAsync()) { }
+		}
+
 		public async Task SignOutAsync() {
 			Uri uri = await GetSignOutUrlAsync();
 			if (uri == null) return;
