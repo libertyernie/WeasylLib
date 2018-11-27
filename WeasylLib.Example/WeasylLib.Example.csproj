@@ -52,19 +52,15 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WeasylLib.Api\WeasylLib.Api.csproj">
-      <Project>{47B2594F-6243-411C-A3FC-FB543908CAEF}</Project>
-      <Name>WeasylLib.Api</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\WeasylLib.Frontend\WeasylLib.Frontend.csproj">
-      <Project>{0DD57635-3139-4C6E-ABA1-56A250243BD0}</Project>
-      <Name>WeasylLib.Frontend</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json">
       <Version>11.0.2</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\WeasylLib\WeasylLib.csproj">
+      <Project>{22aceeec-0a68-4278-af95-04c6a37dc309}</Project>
+      <Name>WeasylLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

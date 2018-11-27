@@ -4,8 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using WeasylLib.Api;
-using WeasylLib.Frontend;
 
 namespace WeasylLib.Example {
 	class Program {
@@ -15,27 +13,24 @@ namespace WeasylLib.Example {
 			string apiKey = Console.ReadLine();
 			if (string.IsNullOrEmpty(apiKey)) return;
 
-			var client = new WeasylApiClient(apiKey);
-			ListGallery(client).GetAwaiter().GetResult();
+			var client = new WeasylClient(apiKey);
+			PrintAvatar(client).GetAwaiter().GetResult();
 		}
 
-		static async Task UploadImageAsync() {
-			var c = new WeasylFrontendClient();
-			await c.SignInAsync("lizardsocks", Console.ReadLine(), true);
+		static async Task UploadImageAsync(WeasylClient c) {
 			var folders = await c.GetFoldersAsync();
 			var uri = await c.UploadVisualAsync(
-				File.ReadAllBytes(@"C:\Users\admin\Pictures\san diego\P_20170315_190424.jpg"),
-				"WBC 2017",
-				WeasylFrontendClient.SubmissionType.Photography,
+				File.ReadAllBytes(@"C:\Users\admin\Pictures\san diego\IMG_2654.jpg"),
+				"San Diego 2017",
+				WeasylClient.SubmissionType.Photography,
 				folders.First().FolderId,
-				WeasylFrontendClient.Rating.General,
+				WeasylClient.Rating.General,
 				"Uploading some old pictures to test some C# code I'm writing.",
 				new[] { "photo", "baseball", "san diego" });
 			Console.WriteLine(uri);
-			await c.SignOutAsync();
 		}
 
-		static async Task PrintAvatar(WeasylApiClient client) {
+		static async Task PrintAvatar(WeasylClient client) {
 			var user = await client.WhoamiAsync();
 			string url = await client.GetAvatarUrlAsync(user.login);
 			var request = WebRequest.Create(url);
@@ -47,25 +42,25 @@ namespace WeasylLib.Example {
 			}
 		}
 
-		static async Task ListGallery(WeasylApiClient client) {
+		static async Task ListGallery(WeasylClient client) {
 			var user = await client.WhoamiAsync();
 			Console.WriteLine(user.login);
 
 			Console.WriteLine("----------");
-			var gallery = await client.GetUserGalleryAsync(user.login, new WeasylApiClient.GalleryRequestOptions {
+			var gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
 				count = 1
 			});
 			foreach (var s in gallery.submissions) Console.WriteLine(s.title);
 
 			Console.WriteLine("----------");
-			gallery = await client.GetUserGalleryAsync(user.login, new WeasylApiClient.GalleryRequestOptions {
+			gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
 				count = 10,
 				nextid = gallery.nextid
 			});
 			foreach (var s in gallery.submissions) Console.WriteLine(s.title);
 
 			Console.WriteLine("----------");
-			gallery = await client.GetUserGalleryAsync(user.login, new WeasylApiClient.GalleryRequestOptions {
+			gallery = await client.GetUserGalleryAsync(user.login, new WeasylClient.GalleryRequestOptions {
 				count = 3,
 				nextid = gallery.nextid
 			});
@@ -80,7 +75,7 @@ namespace WeasylLib.Example {
 			}
 		}
 
-		static async Task ListCharacters(WeasylApiClient client) {
+		static async Task ListCharacters(WeasylClient client) {
 			var user = await client.WhoamiAsync();
 			Console.WriteLine(user.login);
 

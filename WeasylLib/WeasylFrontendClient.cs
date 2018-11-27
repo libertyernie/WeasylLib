@@ -3,101 +3,20 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace WeasylLib.Frontend {
-	public class WeasylFrontendClient {
+namespace WeasylLib {
+	public partial class WeasylClient {
 		private CookieContainer cookieContainer = new CookieContainer();
-
-		public string WZL {
-			get {
-				return cookieContainer.GetCookies(new Uri("https://www.weasyl.com"))["WZL"]?.Value;
-			}
-			set {
-				cookieContainer.SetCookies(new Uri("https://www.weasyl.com"), "WZL=" + Regex.Replace(value, "[^A-Za-z0-9]", ""));
-			}
-		}
 
 		private HttpWebRequest CreateRequest(string url) {
 			HttpWebRequest req = WebRequest.CreateHttp(url);
+			if (_apiKey != null) req.Headers["X-Weasyl-API-Key"] = _apiKey;
 			req.CookieContainer = cookieContainer;
 			req.UserAgent = "WeasylLib.Frontend/0.1 (https://https://github.com/libertyernie/WeasylLib)";
 			req.CachePolicy = new System.Net.Cache.RequestCachePolicy(System.Net.Cache.RequestCacheLevel.NoCacheNoStore);
 			return req;
-		}
-
-		private async Task<string> GetCsrfTokenAsync(string url) {
-			Regex regex = new Regex("<html[^>]* data-csrf-token=['\"]([A-Za-z0-9]+)['\"]");
-
-			HttpWebRequest req = CreateRequest(url);
-			using (WebResponse resp = await req.GetResponseAsync())
-			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
-				string line;
-				while ((line = await sr.ReadLineAsync()) != null) {
-					var match = regex.Match(line);
-					if (match.Success) {
-						return match.Groups[1].Value;
-					}
-				}
-			}
-
-			throw new Exception($"Cross-site request forgery prevention token not found on {req.RequestUri}");
-		}
-
-		public async Task SignInAsync(string username, string password, bool sfw = false) {
-			string token = await GetCsrfTokenAsync("https://www.weasyl.com/signin");
-
-			HttpWebRequest req = CreateRequest($"https://www.weasyl.com/signin");
-			req.Method = "POST";
-			req.ContentType = "application/x-www-form-urlencoded";
-			using (var sw = new StreamWriter(await req.GetRequestStreamAsync())) {
-				await sw.WriteAsync($"token={token}&");
-				await sw.WriteAsync($"username={WebUtility.UrlEncode(username)}&");
-				await sw.WriteAsync($"password={WebUtility.UrlEncode(password)}&");
-				await sw.WriteAsync($"sfwmode={(sfw ? "sfw" : "nsfw")}&");
-				await sw.WriteAsync("referer=https://www.weasyl.com/");
-			}
-			using (WebResponse resp = await req.GetResponseAsync()) { }
-		}
-
-		private async Task<Uri> GetSignOutUrlAsync() {
-			Regex regex = new Regex("/signout\\?token=[A-Za-z0-9]+");
-
-			HttpWebRequest req = CreateRequest("https://www.weasyl.com/");
-			using (WebResponse resp = await req.GetResponseAsync())
-			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
-				string line;
-				while ((line = await sr.ReadLineAsync()) != null) {
-					var match = regex.Match(line);
-					if (match.Success) {
-						return new Uri(
-							new Uri("https://www.weasyl.com/"),
-							match.Value);
-					}
-				}
-			}
-
-			return null;
-		}
-
-		public async Task<string> GetUsernameAsync() {
-			Regex regex = new Regex("<a id=['\"]username['\"][^>]* href=['\"]/~([^'\"]+)");
-
-			HttpWebRequest req = CreateRequest("https://www.weasyl.com/");
-			using (WebResponse resp = await req.GetResponseAsync())
-			using (StreamReader sr = new StreamReader(resp.GetResponseStream())) {
-				string line;
-				while ((line = await sr.ReadLineAsync()) != null) {
-					var match = regex.Match(line);
-					if (match.Success) {
-						return match.Groups[1].Value;
-					}
-				}
-			}
-
-			return null;
 		}
 
 		public struct Folder {
@@ -159,8 +78,6 @@ namespace WeasylLib.Frontend {
 		}
 
 		public async Task<Uri> UploadVisualAsync(byte[] data, string title, SubmissionType subtype, int? folderid, Rating rating, string content, IEnumerable<string> tags) {
-			string token = await GetCsrfTokenAsync("https://www.weasyl.com/submit/visual");
-
 			string boundary = "--------------------" + Guid.NewGuid();
 
 			HttpWebRequest req = CreateRequest("https://www.weasyl.com/submit/visual");
@@ -168,11 +85,6 @@ namespace WeasylLib.Frontend {
 			req.ContentType = $"multipart/form-data; boundary={boundary}";
 			using (Stream stream = await req.GetRequestStreamAsync())
 			using (StreamWriter sw = new StreamWriter(stream)) {
-				await sw.WriteLineAsync("--" + boundary);
-				await sw.WriteLineAsync("Content-Disposition: form-data; name=\"token\"");
-				sw.WriteLine();
-				sw.WriteLine(token);
-
 				await sw.WriteLineAsync("--" + boundary);
 				await sw.WriteLineAsync($"Content-Disposition: form-data; name=\"submitfile\"; filename=\"picture.dat\"");
 				sw.WriteLine();
@@ -233,27 +145,16 @@ namespace WeasylLib.Frontend {
 		}
 
 		public async Task DeleteSubmissionAsync(int submitid) {
-			string username = await GetUsernameAsync();
-			string token = await GetCsrfTokenAsync($"https://www.weasyl.com/~{username}/submissions/{submitid}");
+			var user = await WhoamiAsync();
 
 			HttpWebRequest req = CreateRequest("https://www.weasyl.com/remove/submission");
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
 			using (Stream stream = await req.GetRequestStreamAsync())
 			using (StreamWriter sw = new StreamWriter(stream)) {
-				await sw.WriteLineAsync($"token={token}&submitid={submitid}");
+				await sw.WriteLineAsync($"submitid={submitid}");
 			}
 			using (var resp = await req.GetResponseAsync()) { }
-		}
-
-		public async Task SignOutAsync() {
-			Uri uri = await GetSignOutUrlAsync();
-			if (uri == null) return;
-
-			HttpWebRequest req = WebRequest.CreateHttp(uri);
-			req.CookieContainer = cookieContainer;
-			req.UserAgent = "WeasylLib.Frontend/0.1 (https://https://github.com/libertyernie/WeasylLib)";
-			using (WebResponse resp = await req.GetResponseAsync()) { }
 		}
 	}
 }

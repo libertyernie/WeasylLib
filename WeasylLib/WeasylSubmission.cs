@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Net;
 
-namespace WeasylLib.Api {
+namespace WeasylLib {
 	public abstract class WeasylSubmissionBase {
 		public string link;
 		public WeasylSubmissionMedia media;

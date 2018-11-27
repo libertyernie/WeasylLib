@@ -6,11 +6,11 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WeasylLib.Api {
-	public class WeasylApiClient {
+namespace WeasylLib {
+	public partial class WeasylClient {
 		private string _apiKey;
 
-		public WeasylApiClient(string apiKey = null) {
+		public WeasylClient(string apiKey = null) {
 			_apiKey = apiKey;
 		}
 

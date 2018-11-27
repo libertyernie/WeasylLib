@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace WeasylLib.Api {
+namespace WeasylLib {
 	public class WeasylMediaFile {
 		public int? mediaid;
 		public string url;
